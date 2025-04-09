@@ -3,12 +3,10 @@ package com.example.gardening;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends BaseActivity {
 
@@ -22,7 +20,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setupNavigationBar(); // Set up the navigation bar
+        setupNavigationBar();
 
         // Initialize the Spinners and Button
         spinnerA = findViewById(R.id.spinnerA);
@@ -57,12 +55,46 @@ public class MainActivity extends BaseActivity {
                 // Check if all inputs are selected
                 if ("Choose a Flower".equals(selectedA) || "Choose Soil Type".equals(selectedB) || "Choose pot size".equals(selectedC)) {
                     Toast.makeText(MainActivity.this, "Please select options from all spinners.", Toast.LENGTH_SHORT).show();
-                } else if ("Rose".equalsIgnoreCase(selectedA)) {
-                    // Navigate to the Rose page only if the Rose is selected in Spinner A
-                    Intent intent = new Intent(MainActivity.this, RoseActivity.class);
-                    startActivity(intent);
+                    return;
+                }
+
+                if ("Rose".equalsIgnoreCase(selectedA)) {
+                    // Check for soil type
+                    if ("Sandy Loam".equalsIgnoreCase(selectedB)) {
+                        Toast.makeText(MainActivity.this, "Not ideal: Loamy soil is better for Rose.", Toast.LENGTH_SHORT).show();
+                    } else if ("Black".equalsIgnoreCase(selectedB)) {
+                        Toast.makeText(MainActivity.this, "This soil type is not suitable for Rose.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Navigate to the Rose page
+                        Intent intent = new Intent(MainActivity.this, RoseActivity.class);
+                        intent.putExtra("POT_SIZE_CATEGORY", selectedC); // Pass the pot size selection
+                        startActivity(intent);
+                    }
+                } else if ("Tulsi".equalsIgnoreCase(selectedA)) {
+                    // Check for soil type
+                    if ("Black".equalsIgnoreCase(selectedB)) {
+                        Toast.makeText(MainActivity.this, "This soil type is not suitable for Tulsi.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Navigate to the Tulsi page
+                        Intent intent = new Intent(MainActivity.this, TulsiActivity.class);
+                        intent.putExtra("POT_SIZE_CATEGORY", selectedC);
+                        intent.putExtra("SOIL_TYPE", selectedB);
+                        startActivity(intent);
+                    }
+                } else if ("Hibiscus".equalsIgnoreCase(selectedA)) {
+                    // Check for soil type
+                    if ("Black".equalsIgnoreCase(selectedB)) {
+                        Toast.makeText(MainActivity.this, "This soil type is not suitable for Hibiscus.", Toast.LENGTH_SHORT).show();
+                    } else if ("Loamy".equalsIgnoreCase(selectedB) || "Sandy Loam".equalsIgnoreCase(selectedB)) {
+                        // Navigate to the Hibiscus page
+                        Intent intent = new Intent(MainActivity.this, HibiscusActivity.class);
+                        intent.putExtra("POT_SIZE_CATEGORY", selectedC);
+                        intent.putExtra("SOIL_TYPE", selectedB);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(MainActivity.this, "Unknown soil type for Hibiscus.", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    // Add logic for other selections if needed
                     Toast.makeText(MainActivity.this, "Selected: " + selectedA + ", " + selectedB + ", " + selectedC, Toast.LENGTH_SHORT).show();
                 }
             }

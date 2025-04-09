@@ -5,10 +5,10 @@
 
     <!-- Title -->
     <TextView
-        android:id="@+id/roseTitle"
+        android:id="@+id/tulsiTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Rose Plant Water Calculator"
+        android:text="Tulsi Plant Water Calculator"
         android:textSize="24sp"
         android:textStyle="bold"
         android:layout_centerHorizontal="true"
@@ -18,7 +18,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/roseTitle"
+        android:layout_below="@id/tulsiTitle"
         android:layout_above="@id/navigationBar"
         android:layout_marginTop="16dp">
 
@@ -28,17 +28,17 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Day Selection -->
+            <!-- Week Selection -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Select Plant Age (Days):"
+                android:text="Select Plant Age:"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="8dp" />
 
             <Spinner
-                android:id="@+id/daySpinner"
+                android:id="@+id/weekSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:spinnerMode="dropdown"
@@ -126,7 +126,6 @@
                 android:text="Calculate Water Needed"
                 android:textSize="18sp"
                 android:padding="16dp" />
-
         </LinearLayout>
     </ScrollView>
 

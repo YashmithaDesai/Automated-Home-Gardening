@@ -7,21 +7,24 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-public class RoseActivity extends BaseActivity {
+
+public class TulsiActivity extends BaseActivity {
     private TextView soilMoistureTextView;
     private TextView humidityTextView;
     private EditText precipitationEditText;
     private TextView resultTextView;
-    private Spinner daySpinner, potSizeSpinner;
+    private Spinner weekSpinner, potSizeSpinner;
     private String potSizeCategory;
+    private String soilType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rose);
+        setContentView(R.layout.activity_tulsi);
 
-        // Get the pot size category from intent
+        // Get the pot size category and soil type from intent
         potSizeCategory = getIntent().getStringExtra("POT_SIZE_CATEGORY");
+        soilType = getIntent().getStringExtra("SOIL_TYPE");
 
         // Initialize views
         soilMoistureTextView = findViewById(R.id.soilMoistureTextView);
@@ -30,12 +33,12 @@ public class RoseActivity extends BaseActivity {
         resultTextView = findViewById(R.id.resultTextView);
 
         // Initialize Spinners
-        daySpinner = findViewById(R.id.daySpinner);
+        weekSpinner = findViewById(R.id.weekSpinner);
         potSizeSpinner = findViewById(R.id.potSizeSpinner);
 
-        // Set up day spinner
-        String[] dayOptions = {"<28", ">=28"};
-        daySpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, dayOptions));
+        // Set up week spinner
+        String[] weekOptions = {"<3 weeks", ">3 weeks & <8 weeks", ">8 weeks"};
+        weekSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, weekOptions));
 
         // Set up pot size spinner based on category
         String[] potSizes;
@@ -55,11 +58,8 @@ public class RoseActivity extends BaseActivity {
         }
         potSizeSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, potSizes));
 
-        // Fetch Data
         String blynkUrl = "https://blr1.blynk.cloud/external/api/get?token=08HSHBGfNPa53CbXaFQIOWsqQ-c4xDhP&V1";
         new FetchBlynkDataTask(this).fetchDataFromBlynk(blynkUrl);
-
-        // Setup Navigation Bar
         setupNavigationBar();
 
         // Calculate Water Requirement on button click
@@ -68,7 +68,7 @@ public class RoseActivity extends BaseActivity {
 
     private void calculateWaterRequirement() {
         try {
-            String daySelection = daySpinner.getSelectedItem().toString();
+            String weekSelection = weekSpinner.getSelectedItem().toString();
             String potSizeSelection = potSizeSpinner.getSelectedItem().toString();
             String precipitationInput = precipitationEditText.getText().toString();
             String soilMoistureText = soilMoistureTextView.getText().toString();
@@ -82,25 +82,31 @@ public class RoseActivity extends BaseActivity {
             float precipitation = Float.parseFloat(precipitationInput);
             float potArea = Float.parseFloat(potSizeSelection);
 
-            // Adjust daily water requirement based on pot size category
-            float baseWaterRequirement = daySelection.equals("<28") ? 2.0f : 1.25f;
-            float sizeMultiplier;
-            switch (potSizeCategory.toLowerCase()) {
-                case "medium":
-                    sizeMultiplier = 1.5f;
-                    break;
-                case "large":
-                    sizeMultiplier = 2.0f;
-                    break;
-                default: // small
-                    sizeMultiplier = 1.0f;
-                    break;
+            // Determine base water requirement
+            float baseWaterRequirement;
+            if ("sandy loam".equalsIgnoreCase(soilType)) {
+                // Specific logic for sandy loamy soil
+                if (weekSelection.equals("<3 weeks")) {
+                    baseWaterRequirement = 0.75f;
+                } else if (weekSelection.equals(">3 weeks & <8 weeks")) {
+                    baseWaterRequirement = 1.5f;
+                } else { // >8 weeks
+                    baseWaterRequirement = 1.5f;
+                }
+            } else {
+                // Default logic for loamy soil
+                if (weekSelection.equals("<3 weeks")) {
+                    baseWaterRequirement = 0.2f;
+                } else if (weekSelection.equals(">3 weeks & <8 weeks")) {
+                    baseWaterRequirement = 0.3f;
+                } else {
+                    baseWaterRequirement = 0.5f;
+                }
             }
 
-            float dailyWaterRequirement = baseWaterRequirement * sizeMultiplier;
             float precipitationContribution = precipitation * potArea;
             float soilMoistureAdjustment = (100 - soilMoisture) / 100.0f;
-            float waterNeeded = dailyWaterRequirement * potArea * soilMoistureAdjustment - precipitationContribution;
+            float waterNeeded = baseWaterRequirement * potArea * soilMoistureAdjustment - precipitationContribution;
             waterNeeded = Math.max(0, waterNeeded);
 
             resultTextView.setText(String.format("Water Needed: %.2f Litres", waterNeeded));

@@ -28,7 +28,7 @@
         android:theme="@style/Theme.Gardening"
         tools:targetApi="34">
 
-        <activitygit i
+        <activity
             android:name=".HomeActivity"
             android:exported="true">
             <intent-filter>
@@ -37,7 +37,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-        </activitygit>
+        </activity>
 
 
 
@@ -53,11 +53,18 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="false"/>
+            android:exported="true"/>
 
         <activity
             android:name=".RoseActivity"
-            android:exported="false" />
+            android:exported="true" />
+
+        <activity
+            android:name=".TulsiActivity"
+            android:exported="true" />
+        <activity
+        android:name=".HibiscusActivity"
+        android:exported="true" />
 
 
     </application>
